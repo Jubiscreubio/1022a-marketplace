@@ -2,22 +2,14 @@
   "name": "1022a-marketplace",
   "version": "1.0.0",
   "description": "",
-<<<<<<< HEAD
-  "main": "index.js",
-=======
   "main": "main.js",
->>>>>>> f0887942d720f63e06ad7db12e6634c005b57a05
   "scripts": {
     "dev": "tsx watch src/main.ts",
     "test": "vitest -w",
     "build": "npm install && tsc",
     "start": "node ./dist/main.js"
   },
-<<<<<<< HEAD
-  "author": "jubiscreubio",
-=======
   "author": "guilhermeterenciani",
->>>>>>> f0887942d720f63e06ad7db12e6634c005b57a05
   "license": "ISC",
   "devDependencies": {
     "@types/cors": "^2.8.17",
