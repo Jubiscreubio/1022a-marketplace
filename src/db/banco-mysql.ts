@@ -3,6 +3,7 @@ class BancoMysql{
     //Atributos de uma classe
     connection:Connection|null = null
     
+    
     //Métodos
     async criarConexao(){
         this.connection = await mysql.createConnection({
