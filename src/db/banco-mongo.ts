@@ -12,34 +12,34 @@ class BancoMongo{
     }
     async listar(){
         if(!this.connection) throw new Error("Erro de conexão com o banco de dados.")
-        const db = this.connection.db("banco1022a");
+        const db = this.connection.db("defaultdb");
         const result = db.collection('produtos').find().toArray()
         return result
     }
     async inserir(produto:{id:number,nome:string,descricao:string,preco:string,imagem:string}){
         if(!this.connection) throw new Error("Erro de conexão com o banco de dados.")
-        const db = this.connection.db("banco1022a");
+        const db = this.connection.db("defaultdb");
         const result = db.collection('produtos').insertOne(produto)
         return result
     }
     async excluir(id:string){
         const idNumber = parseInt(id)
         if(!this.connection) throw new Error("Erro de conexão com o banco de dados.")
-        const db = this.connection.db("banco1022a");
+        const db = this.connection.db("defaultdb");
         const result = db.collection('produtos').deleteOne({id:idNumber})
         return result
     }
     async alterar(id:string,produto:{id?:string,nome:string,descricao:string,preco:string,imagem:string}){
         const idNumber = parseInt(id)
         if(!this.connection) throw new Error("Erro de conexão com o banco de dados.")
-        const db = this.connection.db("banco1022a");
+        const db = this.connection.db("defaultdb");
         const result = db.collection('produtos').updateOne({id:idNumber},{$set:produto})
         return result
     }
     async listarPorId(id:string){
         const idNumber = parseInt(id)
         if(!this.connection) throw new Error("Erro de conexão com o banco de dados.")
-        const db = this.connection.db("banco1022a");
+        const db = this.connection.db("defaultdb");
         const result = db.collection('produtos').findOne({id:idNumber})
         return result
     }
