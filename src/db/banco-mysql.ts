@@ -28,15 +28,9 @@ class BancoMysql{
         const [result, fields] = await this.connection.query("SELECT * FROM produtos")
         return result
     }
-<<<<<<< HEAD
-    async inserir(produto:{id:number,nome:string,descricao:string,valor:string,imagem:string}){
+    async inserir(produto:{id:number,titulo:string,detalhes:string,valor:string,foto:string,categoria:string,estoque:string}){
         if(!this.connection) throw new Error("Erro de conexão com o banco de dados.")
         const [result, fields] = await this.connection.query("INSERT INTO produtos VALUES (?,?,?,?,?)",[produto.id,produto.titulo,produto.detalhes,produto.valor,produto.foto,produto.categoria,produto.estoque])
-=======
-    async inserir(produto:{id:number,nome:string,descricao:string,preco:string,imagem:string}){
-        if(!this.connection) throw new Error("Erro de conexão com o banco de dados.")
-        const [result, fields] = await this.connection.query("INSERT INTO produtos VALUES (?,?,?,?,?)",[produto.id,produto.nome,produto.descricao,produto.preco,produto.imagem])
->>>>>>> bd49c6ad0faf8e511e0867fbd91a9cbb0a6d6271
         return result
     }
     async excluir(id:string){
@@ -44,13 +38,9 @@ class BancoMysql{
         const [result, fields] = await this.connection.query("DELETE FROM produtos WHERE id = ?",[id])
         return result
     }
-    async alterar(id:string,produto:{id?:string,nome:string,descricao:string,preco:string,imagem:string}){
+    async alterar(id:string,produto:{id?:string,titulo:string,detalhes:string,valor:string,foto:string,categoria:string,estoque:string}){
         if(!this.connection) throw new Error("Erro de conexão com o banco de dados.")
-<<<<<<< HEAD
         const [result, fields] = await this.connection.query("UPDATE produtos SET nome=?,descricao=?,preco=?,imagem=? WHERE id=?",[produto.id,produto.titulo,produto.detalhes,produto.valor,produto.foto,produto.categoria,produto.estoque])
-=======
-        const [result, fields] = await this.connection.query("UPDATE produtos SET nome=?,descricao=?,preco=?,imagem=? WHERE id=?",[produto.nome,produto.descricao,produto.preco,produto.imagem,id])
->>>>>>> bd49c6ad0faf8e511e0867fbd91a9cbb0a6d6271
         return result
     }
     async listarPorId(id:string){
@@ -60,9 +50,6 @@ class BancoMysql{
     }
 }
 
-<<<<<<< HEAD
     
 
-=======
->>>>>>> bd49c6ad0faf8e511e0867fbd91a9cbb0a6d6271
 export default BancoMysql
