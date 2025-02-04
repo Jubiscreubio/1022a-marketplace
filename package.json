@@ -20,8 +20,14 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
+<<<<<<< HEAD
+    "express": "^4.21.2",
+    "mysql2": "^3.11.3",
+    "react-router-dom": "^6.27.0"
+=======
     "express": "^4.21.0",
     "mongodb": "^6.12.0",
     "mysql2": "^3.11.3"
+>>>>>>> bd49c6ad0faf8e511e0867fbd91a9cbb0a6d6271
   }
 }
