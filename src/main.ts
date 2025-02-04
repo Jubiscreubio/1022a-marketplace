@@ -36,17 +36,17 @@ app.get("/produtos/:codigo", async (req, res) => {
 
 app.post("/produtos", async (req, res) => {
     try {
-        const { codigo: id, titulo, detalhes, valor, foto, categoria, estoque } = req.body
+        const { titulo, detalhes, valor, foto, categoria, estoque } = req.body
         const banco = new BancoMysql()
         await banco.criarConexao()
         const produto = {
-            codigo: id ? parseInt(id) : null,
-            titulo: titulo || "",
-            detalhes: detalhes || "",
-            valor: valor ? parseFloat(valor) : 0,
-            foto: foto || "",
-            categoria: categoria || "",
-            estoque: estoque ? parseInt(estoque) : 0
+            id: 0, // ID será gerado automaticamente pelo banco de dados
+            titulo: String(titulo) || "",
+            detalhes: String(detalhes) || "",
+            valor: valor ? parseFloat(valor).toFixed(2) : "0.00",
+            foto: String(foto) || "",
+            categoria: String(categoria) || "",
+            estoque: String(estoque ? parseInt(estoque) : 0)
         }
         const result = await banco.inserir(produto)
         await banco.finalizarConexao()
@@ -76,12 +76,12 @@ app.put("/produtos/:codigo", async (req, res) => {
     try {
         const { titulo, detalhes, valor, foto, categoria, estoque } = req.body
         const produto = {
-            titulo: titulo || "",
-            detalhes: detalhes || "",
-            valor: valor ? parseFloat(valor) : 0,
-            foto: foto || "",
-            categoria: categoria || "",
-            estoque: estoque ? parseInt(estoque) : 0
+            titulo: String(titulo) || "",
+            detalhes: String(detalhes) || "",
+            valor: valor ? parseFloat(valor).toFixed(2) : "0.00",
+            foto: String(foto) || "",
+            categoria: String(categoria) || "",
+            estoque: String(estoque ? parseInt(estoque) : 0)
         }
         const banco = new BancoMysql()
         await banco.criarConexao()
