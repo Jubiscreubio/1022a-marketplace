@@ -1,42 +1,19 @@
 import express from 'express'
 import mysql from 'mysql2/promise'
 import cors from 'cors'
+import BancoMysql from './db/banco-mysql'
+import BancoMongo from './db/banco-mongo'
 
 const app = express()
 app.use(express.json())
 app.use(cors())
 
-
 app.get("/produtos", async (req, res) => {
     try {
-        const connection = await mysql.createConnection({
-            host: process.env.dbhost ? process.env.dbhost : "mysql-marketplace-estudante-57dd.f.aivencloud.com",
-            user: process.env.dbuser ? process.env.dbuser : "avnadmin",
-            password: process.env.dbpassword ? process.env.dbpassword : "AVNS_0a_3E2vf_5P_Q1FJapL",
-            database: process.env.dbname ? process.env.dbname : "defaultdb",
-            port: process.env.dbport ? parseInt(process.env.dbport) : 13293
-        })
-        const [result, fields] = await connection.query("SELECT * from produtos")
-        await connection.end()
-        res.send(result)
-    } catch (e) {
-        res.status(500).send("Server ERROR")
-    }
-})
-app.post("/produtos", async (req, res) => {
-    try {
-        const connection = await mysql.createConnection({
-            host: process.env.dbhost ? process.env.dbhost : "mysql-marketplace-estudante-57dd.f.aivencloud.com",
-            user: process.env.dbuser ? process.env.dbuser : "avnadmin",
-            password: process.env.dbpassword ? process.env.dbpassword : "AVNS_0a_3E2vf_5P_Q1FJapL",
-            database: process.env.dbname ? process.env.dbname : "defaultdb",
-            port: process.env.dbport ? parseInt(process.env.dbport) : 13293
-        })
-        const {id,nome,descricao,preco,imagem} = req.body
-        const [result, fields] = 
-                    await connection.query("INSERT INTO produtos VALUES (?,?,?,?,?)",
-                            [id,nome,descricao,preco,imagem])
-        await connection.end()
+        const banco = new BancoMysql()
+        await banco.criarConexao()
+        const result = await banco.listar()
+        await banco.finalizarConexao()
         res.send(result)
     } catch (e) {
         console.log(e)
@@ -44,38 +21,76 @@ app.post("/produtos", async (req, res) => {
     }
 })
 
-
-app.get("/usuarios", async (req, res) => {
+app.get("/produtos/:codigo", async (req, res) => {
     try {
-        const connection = await mysql.createConnection({
-            host: process.env.dbhost ? process.env.dbhost : "mysql-marketplace-estudante-57dd.f.aivencloud.com",
-            user: process.env.dbuser ? process.env.dbuser : "avnadmin",
-            password: process.env.dbpassword ? process.env.dbpassword : "AVNS_0a_3E2vf_5P_Q1FJapL",
-            database: process.env.dbname ? process.env.dbname : "defaultdb",
-            port: process.env.dbport ? parseInt(process.env.dbport) : 13293
-        })
-        const [result, fields] = await connection.query("SELECT * from usuarios")
-        await connection.end()
+        const banco = new BancoMysql()
+        await banco.criarConexao()
+        const result = await banco.listarPorId(req.params.codigo)
+        await banco.finalizarConexao()
         res.send(result)
     } catch (e) {
+        console.log(e)
         res.status(500).send("Server ERROR")
     }
 })
 
-app.get("/cadastro-carrinho", async (req, res) => {
+app.post("/produtos", async (req, res) => {
     try {
-        const connection = await mysql.createConnection({
-            host: process.env.dbhost ? process.env.dbhost : "mysql-marketplace-estudante-57dd.f.aivencloud.com",
-            user: process.env.dbuser ? process.env.dbuser : "avnadmin",
-            password: process.env.dbpassword ? process.env.dbpassword : "AVNS_0a_3E2vf_5P_Q1FJapL",
-            database: process.env.dbname ? process.env.dbname : "defaultdb",
-            port: process.env.dbport ? parseInt(process.env.dbport) : 13293
-        })
-        const [result, fields] = await connection.query("SELECT * from carrinho")
-        await connection.end()
-        res.send(result)
+        const { titulo, detalhes, valor, foto, categoria, estoque } = req.body
+        const banco = new BancoMysql()
+        await banco.criarConexao()
+        const produto = {
+            id: 0, // ID será gerado automaticamente pelo banco de dados
+            titulo: String(titulo) || "",
+            detalhes: String(detalhes) || "",
+            valor: valor ? parseFloat(valor).toFixed(2) : "0.00",
+            foto: String(foto) || "",
+            categoria: String(categoria) || "",
+            estoque: String(estoque ? parseInt(estoque) : 0)
+        }
+        const result = await banco.inserir(produto)
+        await banco.finalizarConexao()
+        res.send(result) 
     } catch (e) {
-        res.status(500).send("Server ERROR")
+        console.log(e)
+        res.status(500).send(e)
+    }
+})
+
+// DELETAR
+app.delete("/produtos/:codigo", async (req, res) => {
+    try {
+        const banco = new BancoMysql()
+        await banco.criarConexao()
+        const result = await banco.excluir(req.params.codigo)
+        await banco.finalizarConexao()
+        res.status(200).send("Produto excluído com sucesso código: " + req.params.codigo)
+    } catch (e) {
+        console.log(e)
+        res.status(500).send("Erro ao excluir")
+    }
+})
+
+// ALTERAR
+app.put("/produtos/:codigo", async (req, res) => {
+    try {
+        const { titulo, detalhes, valor, foto, categoria, estoque } = req.body
+        const produto = {
+            titulo: String(titulo) || "",
+            detalhes: String(detalhes) || "",
+            valor: valor ? parseFloat(valor).toFixed(2) : "0.00",
+            foto: String(foto) || "",
+            categoria: String(categoria) || "",
+            estoque: String(estoque ? parseInt(estoque) : 0)
+        }
+        const banco = new BancoMysql()
+        await banco.criarConexao()
+        await banco.alterar(req.params.codigo, produto)
+        await banco.finalizarConexao()
+        res.status(200).send("Produto alterado com sucesso código: " + req.params.codigo)
+    } catch (e) {
+        console.log(e)
+        res.status(500).send("Erro ao alterar")
     }
 })
 
