@@ -92,8 +92,4 @@ app.put("/produtos/:codigo", async (req, res) => {
 
 app.listen(8000, () => {
     console.log("Iniciei o servidor");
-<<<<<<< HEAD
 });
-=======
-});
->>>>>>> a68b698529c0522b2c99b936c71d807b1116e406

@@ -63,8 +63,4 @@ class BancoMysql {
     }
 }
 
-<<<<<<< HEAD
 export default BancoMysql;
-=======
-export default BancoMysql;
->>>>>>> a68b698529c0522b2c99b936c71d807b1116e406

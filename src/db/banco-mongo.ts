@@ -53,8 +53,4 @@ class BancoMongo {
     }
 }
 
-<<<<<<< HEAD
 export default BancoMongo;
-=======
-export default BancoMongo;
->>>>>>> a68b698529c0522b2c99b936c71d807b1116e406
