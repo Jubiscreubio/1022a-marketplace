@@ -1,56 +1,79 @@
-import { MongoClient } from 'mongodb';
+import mysql, { Connection } from 'mysql2/promise';
 
-class BancoMongo {
-    connection: MongoClient | null = null;
-
-    async criarConexao() {
-        const url = 'mongodb://localhost:27017';
-        const client = new MongoClient(url);
-        this.connection = await client.connect();
+class BancoMysql {
+    private conexao: Promise<Connection>;
+    constructor() {
+        this.conexao = mysql.createConnection({
+            host: process.env.dbhost ? process.env.dbhost : "localhost",
+            user: process.env.dbuser ? process.env.dbuser : "root",
+            password: process.env.dbpassword ? process.env.dbpassword : "",
+            database: process.env.dbname ? process.env.dbname : "banco1022a",
+            port: process.env.dbport ? parseInt(process.env.dbport) : 28355
+        });
     }
 
-    async finalizarConexao() {
-        if (!this.connection) throw new Error("Erro de conexão com o banco de dados.");
-        await this.connection.close();
+    async getConnection() {
+        const conn = await this.conexao; 
+        return conn;
     }
 
-    async listar() {
-        if (!this.connection) throw new Error("Erro de conexão com o banco de dados.");
-        const db = this.connection.db("defaultdb");
-        const result = db.collection('produtos').find().toArray();
-        return result;
+    async end() {
+        const conn = await this.conexao; 
+        await conn.end();
     }
 
-    async inserir(produto: { id: number, nome: string, descricao: string, preco: string, imagem: string }) {
-        if (!this.connection) throw new Error("Erro de conexão com o banco de dados.");
-        const db = this.connection.db("defaultdb");
-        const result = db.collection('produtos').insertOne(produto);
-        return result;
+    async listar(){
+        const conn = await this.getConnection()
+        const [result, fields] = await conn.query("SELECT * from produtos");
+        return result
     }
-
-    async excluir(id: string) {
-        const idNumber = parseInt(id);
-        if (!this.connection) throw new Error("Erro de conexão com o banco de dados.");
-        const db = this.connection.db("defaultdb");
-        const result = db.collection('produtos').deleteOne({ id: idNumber });
-        return result;
+    async inserir(produto:{id:number,nome:string,descricao:string,imagem:string}){
+        const conn = await this.getConnection()
+        const sqlQuery = "INSERT INTO produtos (id,nome,descricao,imagem) VALUES (?,?,?,?)"
+        const parametro = [produto.id,produto.nome,produto.descricao,produto.imagem]
+        const [result, fields] = await conn.query(sqlQuery,parametro);
+        return result
     }
-
-    async alterar(id: string, produto: { nome: string, descricao: string, preco: string, imagem: string }) {
-        const idNumber = parseInt(id);
-        if (!this.connection) throw new Error("Erro de conexão com o banco de dados.");
-        const db = this.connection.db("defaultdb");
-        const result = db.collection('produtos').updateOne({ id: idNumber }, { $set: produto });
-        return result;
+    async excluir(id:string){
+        const conn = await this.getConnection()
+        const sqlQuery = "DELETE FROM produtos WHERE id = ?"
+        const parametro = [id]
+        const [result, fields] = await conn.query(sqlQuery,parametro);
+        return result
     }
-
-    async listarPorId(id: string) {
-        const idNumber = parseInt(id);
-        if (!this.connection) throw new Error("Erro de conexão com o banco de dados.");
-        const db = this.connection.db("defaultdb");
-        const result = db.collection('produtos').findOne({ id: idNumber });
-        return result;
+    async alterar(id:string,produto:{id?:string,nome:string,descricao:string,imagem:string}){
+        const conn = await this.getConnection()
+        const sqlQuery = "UPDATE produtos SET nome=?,descricao=?,imagem=? WHERE id = ?"
+        const parametro = [produto.nome,produto.descricao,produto.imagem,id]
+        const [result, fields] = await conn.query(sqlQuery,parametro);
+        return result
+    }
+    async listarUser(){
+        const conn = await this.getConnection()
+        const [result, fields] = await conn.query("SELECT * from usuarios");
+        return result
+    }
+    async inserirUser(usuario:{id:number,nome:string,funcao:string,email:string,foto:string}){
+        const conn = await this.getConnection()
+        const sqlQuery = "INSERT INTO usuarios (id,nome,funcao,email,foto) VALUES (?,?,?,?,?)"
+        const parametro = [usuario.id,usuario.nome,usuario.funcao,usuario.email,usuario.foto]
+        const [result, fields] = await conn.query(sqlQuery,parametro);
+        return result
+    }
+    async excluirUser(id:string){
+        const conn = await this.getConnection()
+        const sqlQuery = "DELETE FROM usuarios WHERE id = ?"
+        const parametro = [id]
+        const [result, fields] = await conn.query(sqlQuery,parametro);
+        return result
+    }
+    async alterarUser(id:string,usuario:{id?:string,nome:string,funcao:string,email:string,foto:string}){
+        const conn = await this.getConnection()
+        const sqlQuery = "UPDATE usuarios SET nome=?,funcao=?,email=?,foto=? WHERE id = ?"
+        const parametro = [usuario.nome,usuario.funcao,usuario.email,usuario.foto,id]
+        const [result, fields] = await conn.query(sqlQuery,parametro);
+        return result
     }
 }
 
-export default BancoMongo;
+export default BancoMysql;
